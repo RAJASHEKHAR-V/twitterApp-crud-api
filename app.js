@@ -250,44 +250,9 @@ app.get(
 
 //API-9 a list of all tweets of the user
 
-const get_list = (listOfUserLikesTweets, listOfUserReplyTweets) => {
-  let result_list = [];
-  for (let likeObject of listOfUserLikesTweets) {
-    for (let replyObject of listOfUserReplyTweets) {
-      if (likeObject.tweet === replyObject.tweet) {
-        likeObject.replies = replyObject.replies;
-        likeObject.dateTime = replyObject.dateTime;
-        result_list.push(likeObject);
-        break;
-      }
-    }
-  }
-  return result_list;
-};
-
 app.get("/user/tweets/", AuthenticateToken, async (request, response) => {
   const { payload } = request;
   const { user_id, username, gender } = payload;
-
-  //Also gives the same answer but test cases are not satisfying clauses what i used.
-
-  //   const getListUserTweetLikesQuery = `
-  //   SELECT tweet.tweet AS tweet, COUNT(DISTINCT like.like_id) AS likes
-  //   FROM user INNER JOIN tweet ON tweet.user_id =user.user_id
-  //   INNER JOIN like ON like.tweet_id = tweet.tweet_id
-  //   WHERE user.user_id=${user_id}
-  //   GROUP BY tweet.tweet;`;
-  //   const getListUserTweetRepliesQuery = `
-  //   SELECT tweet.tweet AS tweet, COUNT(DISTINCT reply.reply_id) AS replies,tweet.date_time AS dateTime
-  //   FROM user INNER JOIN tweet ON tweet.user_id =user.user_id
-  //   INNER JOIN reply ON reply.tweet_id = tweet.tweet_id
-  //   WHERE user.user_id=${user_id}
-  //   GROUP BY tweet.tweet;`;
-  //   const listOfUserLikesTweets = await db.all(getListUserTweetLikesQuery);
-  //   const listOfUserReplyTweets = await db.all(getListUserTweetRepliesQuery);
-  //   const result_list = get_list(listOfUserLikesTweets, listOfUserReplyTweets);
-  //   response.send(result_list);
-
   const getListUserTweetsQuery = `
    SELECT tweet.tweet AS tweet, COUNT(DISTINCT(like.like_id)) AS likes,
     COUNT(DISTINCT(reply.reply_id)) AS replies,
